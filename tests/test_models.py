@@ -6,16 +6,6 @@ import pytest
 from src.models import Transaction, TransactionType, ExpenseCategory, IncomeCategory
 
 
-@pytest.fixture
-def valid_transaction() -> Transaction:
-    return Transaction(
-        datetime(2026, 10, 5),
-        TransactionType.EXPENSE,
-        Decimal("42.50"),
-        ExpenseCategory.FOOD,
-        "Weekly shopping")
-
-
 def test_create_valid_expense_transaction(valid_transaction: Transaction):
     assert valid_transaction.date == datetime(2026, 10, 5)
     assert valid_transaction.type == TransactionType.EXPENSE
