@@ -6,12 +6,12 @@ import pytest
 from src.models import Transaction, TransactionType, ExpenseCategory, IncomeCategory
 
 
-def test_create_valid_expense_transaction(valid_transaction: Transaction):
-    assert valid_transaction.date == datetime(2026, 10, 5)
-    assert valid_transaction.type == TransactionType.EXPENSE
-    assert valid_transaction.amount == Decimal("42.50")
-    assert valid_transaction.category == ExpenseCategory.FOOD
-    assert valid_transaction.description == "Weekly shopping"
+def test_create_valid_expense_transaction(valid_expense_transaction: Transaction):
+    assert valid_expense_transaction.date == datetime(2026, 10, 5)
+    assert valid_expense_transaction.type == TransactionType.EXPENSE
+    assert valid_expense_transaction.amount == Decimal("42.50")
+    assert valid_expense_transaction.category == ExpenseCategory.FOOD
+    assert valid_expense_transaction.description == "Weekly shopping"
 
 
 def test_transaction_rejects_invalid_date():

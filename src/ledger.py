@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
+from decimal import Decimal
 
 from src.exceptions import TransactionNotFoundError
-from src.models import Transaction
+from src.models import Transaction, TransactionType
 
 
 @dataclass
@@ -23,3 +24,13 @@ class TransactionLedger:
     @property
     def transactions(self) -> tuple[Transaction, ...]:
         return tuple(self._transactions)
+
+    @property
+    def balance(self) -> Decimal:
+        balance = Decimal("0.00")
+        for transaction in self.transactions:
+            if transaction.type is TransactionType.INCOME:
+                balance += transaction.amount
+            elif transaction.type is TransactionType.EXPENSE:
+                balance -= transaction.amount
+        return balance
