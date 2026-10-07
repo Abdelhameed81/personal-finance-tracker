@@ -23,7 +23,7 @@ class ExpenseCategory(Enum):
     CHILD_CARE = auto()
 
 
-@dataclass
+@dataclass(frozen=True)
 class Transaction:
     date: datetime
     type: TransactionType
@@ -50,4 +50,3 @@ class Transaction:
             raise TypeError("Transaction description must be of type str")
         if not self.description.strip():
             raise ValueError("Transaction description cannot be empty")
-
