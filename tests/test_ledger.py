@@ -1,5 +1,6 @@
 import pytest
 
+from src.exceptions import TransactionNotFoundError
 from src.ledger import TransactionLedger
 from src.models import Transaction
 
@@ -21,6 +22,27 @@ def test_add_invalid_transaction():
     with pytest.raises(TypeError) as exc_info:
         ledger.add_transaction("£42.50")
     assert str(exc_info.value) == "Added transaction must be of type Transaction"
+
+
+def test_remove_valid_transaction(valid_transaction: Transaction):
+    ledger = TransactionLedger()
+    ledger.add_transaction(valid_transaction)
+    ledger.remove_transaction(valid_transaction)
+    assert valid_transaction not in ledger.transactions
+
+
+def test_remove_invalid_transaction():
+    ledger = TransactionLedger()
+    with pytest.raises(TypeError) as exc_info:
+        ledger.remove_transaction("£42.50")
+    assert str(exc_info.value) == "Removed transaction must be of type Transaction"
+
+
+def test_remove_transaction_not_in_ledger(valid_transaction: Transaction):
+    ledger = TransactionLedger()
+    with pytest.raises(TransactionNotFoundError) as exc_info:
+        ledger.remove_transaction(valid_transaction)
+    assert exc_info.value.transaction == valid_transaction
 
 
 def test_transactions_property_returns_tuple(valid_transaction: Transaction):

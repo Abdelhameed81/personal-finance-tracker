@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 
+from src.exceptions import TransactionNotFoundError
 from src.models import Transaction
 
 
@@ -11,6 +12,13 @@ class TransactionLedger:
         if not isinstance(transaction, Transaction):
             raise TypeError("Added transaction must be of type Transaction")
         self._transactions.append(transaction)
+
+    def remove_transaction(self, transaction: Transaction) -> None:
+        if not isinstance(transaction, Transaction):
+            raise TypeError("Removed transaction must be of type Transaction")
+        if transaction not in self._transactions:
+            raise TransactionNotFoundError(transaction)
+        self._transactions.remove(transaction)
 
     @property
     def transactions(self) -> tuple[Transaction, ...]:
