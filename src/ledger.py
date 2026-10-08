@@ -26,6 +26,10 @@ class TransactionLedger:
         return tuple(self._transactions)
 
     @property
+    def expenses(self) -> tuple[Transaction, ...]:
+        return tuple(transaction for transaction in self._transactions if transaction.type is TransactionType.EXPENSE)
+
+    @property
     def balance(self) -> Decimal:
         balance = Decimal("0.00")
         for transaction in self.transactions:

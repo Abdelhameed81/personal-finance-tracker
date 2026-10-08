@@ -5,6 +5,7 @@ import pytest
 from src.exceptions import TransactionNotFoundError
 from src.ledger import TransactionLedger
 from src.transaction import Transaction, TransactionType
+from tests.conftest import valid_income_transaction
 
 
 def test_ledger_transactions_is_unique_per_ledger_object():
@@ -85,3 +86,29 @@ def test_ledger_balance(valid_income_transaction: Transaction, valid_expense_tra
     ledger.add_transaction(valid_income_transaction)
     ledger.add_transaction(valid_expense_transaction)
     assert ledger.balance == valid_income_transaction.amount - valid_expense_transaction.amount
+
+
+def test_expenses_ledger_contains_only_expenses(valid_income_transaction: Transaction,
+                                                valid_expense_transaction: Transaction):
+    ledger = TransactionLedger()
+    ledger.add_transaction(valid_income_transaction)
+    ledger.add_transaction(valid_expense_transaction)
+    ledger_expenses = ledger.expenses
+    for transaction in ledger_expenses:
+        assert transaction.type == TransactionType.EXPENSE
+
+
+def test_incomes_ledger_returns_empty_tuple(valid_income_transaction: Transaction):
+    ledger = TransactionLedger()
+    ledger.add_transaction(valid_income_transaction)
+    ledger.add_transaction(valid_income_transaction)
+    assert not ledger.expenses
+
+
+def test_expenses_property_cannot_be_modified(valid_expense_transaction: Transaction):
+    ledger = TransactionLedger()
+    ledger.add_transaction(valid_expense_transaction)
+    ledger.add_transaction(valid_expense_transaction)
+    ledger_expenses = ledger.expenses
+    with pytest.raises(AttributeError):
+        ledger_expenses.append(valid_expense_transaction)
