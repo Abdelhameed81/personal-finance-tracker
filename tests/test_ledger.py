@@ -4,7 +4,7 @@ import pytest
 
 from src.exceptions import TransactionNotFoundError
 from src.ledger import TransactionLedger
-from src.models import Transaction, TransactionType
+from src.transaction import Transaction, TransactionType
 
 
 def test_ledger_transactions_is_unique_per_ledger_object():

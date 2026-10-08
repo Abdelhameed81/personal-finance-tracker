@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 
 from src.exceptions import TransactionNotFoundError
-from src.models import Transaction, TransactionType
+from src.transaction import Transaction, TransactionType
 
 
 @dataclass

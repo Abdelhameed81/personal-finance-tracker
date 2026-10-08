@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from src.models import Transaction, TransactionType, ExpenseCategory, IncomeCategory
+from src.transaction import Transaction, TransactionType, ExpenseCategory, IncomeCategory
 
 
 @pytest.fixture
