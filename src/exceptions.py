@@ -1,4 +1,4 @@
-from src.transaction import Transaction
+from src.models.transaction import Transaction
 
 
 class TransactionNotFoundError(Exception):

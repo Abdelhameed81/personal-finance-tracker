@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from src.transaction import Transaction, TransactionType, ExpenseCategory, IncomeCategory
+from src.models.transaction import TransactionType, ExpenseCategory, Transaction, IncomeCategory
 
 
 def test_create_valid_expense_transaction(valid_expense_transaction: Transaction):
