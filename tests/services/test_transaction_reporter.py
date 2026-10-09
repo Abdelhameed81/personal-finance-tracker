@@ -1,4 +1,4 @@
-from src.models.ledger import TransactionLedger
+from src.models.transaction_ledger import TransactionLedger
 from src.models.transaction import Transaction
 from src.services.transaction_reporter import TransactionReporter
 

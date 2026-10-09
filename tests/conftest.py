@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from src.models.ledger import TransactionLedger
+from src.models.transaction_ledger import TransactionLedger
 from src.models.transaction import Transaction, TransactionType, ExpenseCategory, IncomeCategory
 
 

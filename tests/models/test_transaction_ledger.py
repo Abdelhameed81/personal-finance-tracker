@@ -3,7 +3,7 @@ from decimal import Decimal
 import pytest
 
 from src.exceptions import TransactionNotFoundError
-from src.models.ledger import TransactionLedger
+from src.models.transaction_ledger import TransactionLedger
 from src.models.transaction import Transaction, TransactionType
 from tests.conftest import valid_income_transaction
 
