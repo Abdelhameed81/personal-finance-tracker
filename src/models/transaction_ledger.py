@@ -1,5 +1,3 @@
-from dataclasses import dataclass, field
-
 from src.exceptions import TransactionNotFoundError
 from src.models.transaction import Transaction
 
