@@ -39,6 +39,19 @@ def test_uuid_cannot_be_modified(valid_income_transaction: Transaction):
         valid_income_transaction.uuid = known_id
 
 
+def test_transaction_rejects_non_uuid_types(valid_income_transaction: Transaction):
+    with pytest.raises(TypeError) as exc_info:
+        Transaction(
+            date=datetime(2026, 10, 5),
+            type=TransactionType.EXPENSE,
+            amount=Decimal("42.50"),
+            category=ExpenseCategory.FOOD,
+            description="Weekly shopping",
+            uuid="12345678-1234-5678-1234-567812345678",
+        )
+    assert str(exc_info.value) == "Transaction uuid must be of type UUID"
+
+
 def test_create_valid_expense_transaction(valid_expense_transaction: Transaction):
     assert valid_expense_transaction.date == datetime(2026, 10, 5)
     assert valid_expense_transaction.type == TransactionType.EXPENSE
