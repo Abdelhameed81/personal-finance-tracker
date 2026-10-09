@@ -27,12 +27,12 @@ def valid_income_transaction() -> Transaction:
         "Monthly salary")
 
 
-@pytest.fixture
-def ledger(transactions: tuple[Transaction, ...]) -> TransactionLedger:
-    ledger = TransactionLedger()
-    for transaction in transactions:
-        ledger.add_transaction(transaction)
-    return ledger
+# @pytest.fixture
+# def ledger(transactions: tuple[Transaction, ...]) -> TransactionLedger:
+#     ledger = TransactionLedger()
+#     for transaction in transactions:
+#         ledger.add_transaction(transaction)
+#     return ledger
 
 
 @pytest.fixture
