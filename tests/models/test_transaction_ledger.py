@@ -5,55 +5,88 @@ from src.models.transaction_ledger import TransactionLedger
 from src.models.transaction import Transaction
 
 
+def test_initialise_empty_ledger():
+    ledger = TransactionLedger(tuple())
+    assert ledger.transactions == tuple()
+
+
+def test_initialise_ledger(valid_income_transaction: Transaction):
+    transactions = (valid_income_transaction,)
+    ledger = TransactionLedger(transactions)
+    assert ledger.transactions == transactions
+
+
+@pytest.mark.parametrize("transactions, expected_exc_info",
+                         [
+                             pytest.param([], "Transactions must be of type tuple",
+                                          id="A list passed instead of a tuple raises TypeError"),
+                             pytest.param(("",), "All transactions items must be of type Transaction",
+                                          id="A tuple containing a non-Transaction element raises TypeError")
+                         ]
+                         )
+def test_initialise_ledger_with_invalid_type(transactions: list | tuple, expected_exc_info: str):
+    with pytest.raises(TypeError) as exc_info:
+        TransactionLedger(transactions)
+    assert str(exc_info.value) == expected_exc_info
+
+
+def test_ledger_cannot_modify_original_input(valid_income_transaction: Transaction):
+    transactions = (valid_income_transaction,)
+    ledger = TransactionLedger(transactions)
+    assert ledger.transactions == transactions
+    ledger.add_transaction(valid_income_transaction)
+    assert len(transactions) == 1
+    assert len(ledger.transactions) == 2
+
+
 def test_ledger_transactions_is_unique_per_ledger_object():
-    ledger_1 = TransactionLedger()
-    ledger_2 = TransactionLedger()
-    assert ledger_1._transactions is not ledger_2.transactions
+    ledger_1 = TransactionLedger(())
+    ledger_2 = TransactionLedger(())
+    assert ledger_1._transactions is not ledger_2._transactions
 
 
 def test_add_valid_transaction(valid_expense_transaction: Transaction):
-    ledger = TransactionLedger()
+    ledger = TransactionLedger(())
     ledger.add_transaction(valid_expense_transaction)
     assert valid_expense_transaction in ledger.transactions
 
 
 def test_add_invalid_transaction():
-    ledger = TransactionLedger()
+    ledger = TransactionLedger(())
     with pytest.raises(TypeError) as exc_info:
         ledger.add_transaction("£42.50")
     assert str(exc_info.value) == "Added transaction must be of type Transaction"
 
 
 def test_remove_valid_transaction(valid_expense_transaction: Transaction):
-    ledger = TransactionLedger()
-    ledger.add_transaction(valid_expense_transaction)
+    ledger = TransactionLedger((valid_expense_transaction,))
     ledger.remove_transaction(valid_expense_transaction)
     assert valid_expense_transaction not in ledger.transactions
 
 
 def test_remove_invalid_transaction():
-    ledger = TransactionLedger()
+    ledger = TransactionLedger(())
     with pytest.raises(TypeError) as exc_info:
         ledger.remove_transaction("£42.50")
     assert str(exc_info.value) == "Removed transaction must be of type Transaction"
 
 
 def test_remove_transaction_not_in_ledger(valid_expense_transaction: Transaction):
-    ledger = TransactionLedger()
+    ledger = TransactionLedger(())
     with pytest.raises(TransactionNotFoundError) as exc_info:
         ledger.remove_transaction(valid_expense_transaction)
     assert exc_info.value.transaction == valid_expense_transaction
 
 
 def test_transactions_property_returns_tuple(valid_expense_transaction: Transaction):
-    ledger = TransactionLedger()
+    ledger = TransactionLedger(())
     ledger.add_transaction(valid_expense_transaction)
     transactions = ledger.transactions
     assert isinstance(transactions, tuple)
 
 
 def test_transactions_property_cannot_be_modified(valid_expense_transaction: Transaction):
-    ledger = TransactionLedger()
+    ledger = TransactionLedger(())
     transactions = ledger.transactions
     with pytest.raises(AttributeError):
         transactions.append(valid_expense_transaction)

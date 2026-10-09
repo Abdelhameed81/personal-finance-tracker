@@ -4,9 +4,13 @@ from src.exceptions import TransactionNotFoundError
 from src.models.transaction import Transaction
 
 
-@dataclass
 class TransactionLedger:
-    _transactions: list[Transaction] = field(default_factory=list)
+    def __init__(self, transactions: tuple[Transaction, ...]):
+        if not isinstance(transactions, tuple):
+            raise TypeError("Transactions must be of type tuple")
+        if not all(isinstance(transaction, Transaction) for transaction in transactions):
+            raise TypeError("All transactions items must be of type Transaction")
+        self._transactions = list(transactions)
 
     def add_transaction(self, transaction: Transaction) -> None:
         if not isinstance(transaction, Transaction):

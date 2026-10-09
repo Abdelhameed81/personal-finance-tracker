@@ -37,47 +37,36 @@ def valid_income_transaction() -> Transaction:
 
 @pytest.fixture
 def empty_ledger() -> TransactionLedger:
-    return TransactionLedger()
+    return TransactionLedger(())
 
 
 @pytest.fixture
 def one_income_ledger(valid_income_transaction: Transaction) -> TransactionLedger:
-    ledger = TransactionLedger()
-    ledger.add_transaction(valid_income_transaction)
+    ledger = TransactionLedger((valid_income_transaction,))
     return ledger
 
 
 @pytest.fixture
 def one_expense_ledger(valid_expense_transaction: Transaction) -> TransactionLedger:
-    ledger = TransactionLedger()
-    ledger.add_transaction(valid_expense_transaction)
+    ledger = TransactionLedger((valid_expense_transaction,))
     return ledger
 
 
 @pytest.fixture
 def multi_income_ledger(valid_income_transaction: Transaction) -> TransactionLedger:
-    ledger = TransactionLedger()
-    ledger.add_transaction(valid_income_transaction)
-    ledger.add_transaction(valid_income_transaction)
-    ledger.add_transaction(valid_income_transaction)
+    ledger = TransactionLedger((valid_income_transaction,) * 3)
     return ledger
 
 
 @pytest.fixture
 def multi_expense_ledger(valid_expense_transaction: Transaction) -> TransactionLedger:
-    ledger = TransactionLedger()
-    ledger.add_transaction(valid_expense_transaction)
-    ledger.add_transaction(valid_expense_transaction)
-    ledger.add_transaction(valid_expense_transaction)
+    ledger = TransactionLedger((valid_expense_transaction,) * 3)
     return ledger
 
 
 @pytest.fixture
 def mixed_transaction_ledger(valid_income_transaction: Transaction,
                              valid_expense_transaction: Transaction) -> TransactionLedger:
-    ledger = TransactionLedger()
-    ledger.add_transaction(valid_income_transaction)
-    ledger.add_transaction(valid_income_transaction)
-    ledger.add_transaction(valid_expense_transaction)
-    ledger.add_transaction(valid_expense_transaction)
+    transactions = (valid_income_transaction,) * 2 + (valid_expense_transaction,) * 2
+    ledger = TransactionLedger(transactions)
     return ledger
