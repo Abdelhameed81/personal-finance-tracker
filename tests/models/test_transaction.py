@@ -1,9 +1,42 @@
 from datetime import datetime
 from decimal import Decimal
+from uuid import UUID
 
 import pytest
 
 from src.models.transaction import TransactionType, ExpenseCategory, Transaction, IncomeCategory
+from tests.conftest import known_id
+
+
+def test_new_transaction_get_uuid(valid_income_transaction: Transaction):
+    assert isinstance(valid_income_transaction.uuid, UUID)
+
+
+def test_different_uuids_for_separate_transactions(valid_income_transaction: Transaction,
+                                                   valid_expense_transaction: Transaction):
+    assert valid_income_transaction.uuid != valid_expense_transaction.uuid
+
+
+def test_uuid_type(valid_income_transaction: Transaction):
+    assert type(valid_income_transaction.uuid) is UUID
+
+
+def test_caller_can_provide_uuid_for_new_transaction():
+    transaction = Transaction(
+        date=datetime(2026, 10, 5),
+        type=TransactionType.EXPENSE,
+        amount=Decimal("42.50"),
+        category=ExpenseCategory.FOOD,
+        description="Weekly shopping",
+        uuid=known_id,
+    )
+    assert transaction.uuid == known_id
+
+
+def test_uuid_cannot_be_modified(valid_income_transaction: Transaction):
+    assert isinstance(valid_income_transaction.uuid, UUID)
+    with pytest.raises(AttributeError):
+        valid_income_transaction.uuid = known_id
 
 
 def test_create_valid_expense_transaction(valid_expense_transaction: Transaction):

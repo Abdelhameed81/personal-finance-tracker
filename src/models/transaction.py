@@ -1,7 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum, auto
+from uuid import UUID, uuid4
 
 
 class TransactionType(Enum):
@@ -30,6 +31,7 @@ class Transaction:
     amount: Decimal
     category: IncomeCategory | ExpenseCategory
     description: str
+    uuid: UUID = field(default_factory=uuid4)
 
     def __post_init__(self):
         if not isinstance(self.date, datetime):
@@ -50,3 +52,5 @@ class Transaction:
             raise TypeError("Transaction description must be of type str")
         if not self.description.strip():
             raise ValueError("Transaction description cannot be empty")
+        if not isinstance(self.uuid, UUID):
+            raise TypeError("Transaction uuid must be of type UUID")

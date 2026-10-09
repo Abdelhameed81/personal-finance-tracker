@@ -1,10 +1,13 @@
 from datetime import datetime
 from decimal import Decimal
+from uuid import UUID
 
 import pytest
 
 from src.models.transaction_ledger import TransactionLedger
 from src.models.transaction import Transaction, TransactionType, ExpenseCategory, IncomeCategory
+
+known_id = UUID("12345678-1234-5678-1234-567812345678")
 
 
 @pytest.fixture
