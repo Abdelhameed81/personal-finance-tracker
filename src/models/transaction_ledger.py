@@ -1,8 +1,7 @@
 from dataclasses import dataclass, field
-from decimal import Decimal
 
 from src.exceptions import TransactionNotFoundError
-from src.models.transaction import Transaction, TransactionType
+from src.models.transaction import Transaction
 
 
 @dataclass
