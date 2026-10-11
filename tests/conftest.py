@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from pathlib import Path
 from uuid import UUID
 
 import pytest
@@ -73,3 +74,10 @@ def mixed_transaction_ledger(valid_income_transaction: Transaction,
     transactions = (valid_income_transaction,) * 2 + (valid_expense_transaction,) * 2
     ledger = TransactionLedger(transactions)
     return ledger
+
+
+@pytest.fixture
+def test_transaction_jsons_path() -> Path:
+    project_root = Path(__file__).resolve().parents[1]
+    json_path = project_root / "src" / "data"
+    return json_path

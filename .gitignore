@@ -10,3 +10,6 @@ __pycache__/
 
 # pytest
 .pytest_cache/
+
+# transactional data
+src/data/transactions.json
