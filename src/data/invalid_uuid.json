@@ -1,0 +1,26 @@
+[
+  {
+    "date": "2024-10-09T14:32:00",
+    "type": "INCOME",
+    "amount": "1250.75",
+    "category": "SALARY",
+    "description": "October salary payment",
+    "uuid": "8f14e45f-ea7b-4c1a-9b1e-3b2f4c9d9a12"
+  },
+  {
+    "date": "2024-10-10T09:15:00",
+    "type": "EXPENSE",
+    "amount": "45.99",
+    "category": "SHOPPING",
+    "description": "Weekly groceries",
+    "uuid": "not-a-valid-uuid"
+  },
+  {
+    "date": "2024-10-11T09:15:00",
+    "type": "EXPENSE",
+    "amount": "951.99",
+    "category": "BILLS",
+    "description": "Utility bills",
+    "uuid": "c1d2e3f4-5678-4abc-9fed-157239045246"
+  }
+]

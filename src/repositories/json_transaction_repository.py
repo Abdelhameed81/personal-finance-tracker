@@ -7,6 +7,15 @@ from uuid import UUID
 
 from src.models.transaction import Transaction, TransactionType, IncomeCategory, ExpenseCategory
 
+"""
+design rule is:
+- Missing file → return ().
+- Valid JSON containing [] → return ().
+- Malformed JSON → raise json.JSONDecodeError.
+- Zero-byte file → raise json.JSONDecodeError.
+- Invalid transaction data → raise the relevant exception.
+"""
+
 
 class JsonTransactionRepository:
     def __init__(self, json_file_path: Path) -> None:
@@ -35,9 +44,9 @@ class JsonTransactionRepository:
             return ()
 
         json_text = self._json_file_path.read_text(encoding="utf-8")
-        json_data = json.loads(json_text)
+        json_transactions_data = json.loads(json_text)
 
         transactions = []
-        for json_transaction in json_data:
+        for json_transaction in json_transactions_data:
             transactions.append(self._deserialize_transaction(json_transaction))
         return tuple(transactions)

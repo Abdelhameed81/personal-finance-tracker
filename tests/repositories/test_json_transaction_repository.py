@@ -9,12 +9,22 @@ import pytest
 from src.models.transaction import Transaction, TransactionType, IncomeCategory
 from src.repositories.json_transaction_repository import JsonTransactionRepository
 
+"""
+design rule is:
+- Missing file → return ().
+- Valid JSON containing [] → return ().
+- Malformed JSON → raise json.JSONDecodeError.
+- Zero-byte file → raise json.JSONDecodeError.
+- Invalid transaction data → raise the relevant exception.
+"""
+
 
 @pytest.mark.parametrize("test_json_file", [
     pytest.param("", id="missing-file"),
-    pytest.param("empty_transactions.json", id="empty-file")
+    pytest.param("empty_transactions.json", id="empty-transactions")
 ])
-def test_returns_empty_tuple_for_missing_or_empty_file(test_transaction_jsons_path: Path, test_json_file: str):
+def test_returns_empty_tuple_for_missing_or_empty_transactions_list(test_transaction_jsons_path: Path,
+                                                                    test_json_file: str):
     json_path = test_transaction_jsons_path / test_json_file
     json_trans_repo = JsonTransactionRepository(json_path)
     transactions = json_trans_repo.get_all_transactions()
@@ -22,8 +32,13 @@ def test_returns_empty_tuple_for_missing_or_empty_file(test_transaction_jsons_pa
     assert transactions == ()
 
 
-def test_raises_exception_for_malformed_json_file(test_transaction_jsons_path: Path):
-    json_path = test_transaction_jsons_path / "malformed_json.json"
+@pytest.mark.parametrize("test_json_file", [
+    pytest.param("malformed_json.json", id="malformed_json_file"),
+    pytest.param("empty_file.json", id="empty_json_file")
+])
+def test_raises_json_decode_exception_for_malformed_or_empty_file(test_transaction_jsons_path: Path,
+                                                                  test_json_file: str):
+    json_path = test_transaction_jsons_path / test_json_file
     json_trans_repo = JsonTransactionRepository(json_path)
     with pytest.raises(JSONDecodeError):
         json_trans_repo.get_all_transactions()
@@ -61,3 +76,17 @@ def test_multi_transactions(test_transaction_jsons_path: Path):
     assert transactions[0].description == "October salary payment"
     assert transactions[1].description == "Weekly groceries"
     assert transactions[2].description == "Utility bills"
+
+
+def test_raises_key_error_exception_when_uuid_is_missing(test_transaction_jsons_path: Path):
+    json_path = test_transaction_jsons_path / "missing_uuid.json"
+    json_trans_repo = JsonTransactionRepository(json_path)
+    with pytest.raises(KeyError):
+        json_trans_repo.get_all_transactions()
+
+
+def test_raises_value_error_exception_when_uuid_is_invalid(test_transaction_jsons_path: Path):
+    json_path = test_transaction_jsons_path / "invalid_uuid.json"
+    json_trans_repo = JsonTransactionRepository(json_path)
+    with pytest.raises(ValueError):
+        json_trans_repo.get_all_transactions()
