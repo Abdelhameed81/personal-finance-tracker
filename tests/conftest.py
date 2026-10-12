@@ -1,12 +1,14 @@
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
+from typing import Any, Generator
 from uuid import UUID
 
 import pytest
 
 from src.models.transaction_ledger import TransactionLedger
 from src.models.transaction import Transaction, TransactionType, ExpenseCategory, IncomeCategory
+from src.repositories.json_transaction_repository import JsonTransactionRepository
 
 known_id = UUID("12345678-1234-5678-1234-567812345678")
 

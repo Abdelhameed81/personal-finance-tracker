@@ -57,7 +57,10 @@ class JsonTransactionRepository:
         json_text = self._json_file_path.read_text(encoding="utf-8")
         json_transactions_data = json.loads(json_text)
 
-        transactions = []
-        for json_transaction in json_transactions_data:
-            transactions.append(self._deserialize_transaction(json_transaction))
+        transactions = [self._deserialize_transaction(transaction) for transaction in json_transactions_data]
         return tuple(transactions)
+
+    def save_all_transactions(self, transactions: tuple[Transaction, ...]) -> None:
+        transactions_list = [self._serialize_transaction(transaction) for transaction in transactions]
+        transactions_text = json.dumps(transactions_list, indent=2)
+        self._json_file_path.write_text(transactions_text, encoding="utf-8")

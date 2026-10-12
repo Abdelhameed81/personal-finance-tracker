@@ -1,3 +1,4 @@
+import json
 from decimal import Decimal
 from json import JSONDecodeError
 from pathlib import Path
@@ -46,8 +47,8 @@ def test_serialize_transaction(valid_income_transaction: Transaction):
 ])
 def test_returns_empty_tuple_for_missing_or_empty_transactions_list(test_transaction_jsons_path: Path,
                                                                     test_json_file: str):
-    json_path = test_transaction_jsons_path / test_json_file
-    json_trans_repo = JsonTransactionRepository(json_path)
+    json_file = test_transaction_jsons_path / test_json_file
+    json_trans_repo = JsonTransactionRepository(json_file)
     transactions = json_trans_repo.get_all_transactions()
     assert isinstance(transactions, tuple)
     assert transactions == ()
@@ -59,22 +60,22 @@ def test_returns_empty_tuple_for_missing_or_empty_transactions_list(test_transac
 ])
 def test_raises_json_decode_exception_for_malformed_or_empty_file(test_transaction_jsons_path: Path,
                                                                   test_json_file: str):
-    json_path = test_transaction_jsons_path / test_json_file
-    json_trans_repo = JsonTransactionRepository(json_path)
+    json_file = test_transaction_jsons_path / test_json_file
+    json_trans_repo = JsonTransactionRepository(json_file)
     with pytest.raises(JSONDecodeError):
         json_trans_repo.get_all_transactions()
 
 
 def test_raises_exception_for_json_with_invalid_transaction_data(test_transaction_jsons_path: Path):
-    json_path = test_transaction_jsons_path / "invalid_transaction_data.json"
-    json_trans_repo = JsonTransactionRepository(json_path)
+    json_file = test_transaction_jsons_path / "invalid_transaction_data.json"
+    json_trans_repo = JsonTransactionRepository(json_file)
     with pytest.raises(TypeError):
         json_trans_repo.get_all_transactions()
 
 
 def test_one_transaction(test_transaction_jsons_path: Path):
-    json_path = test_transaction_jsons_path / "one_transaction.json"
-    json_trans_repo = JsonTransactionRepository(json_path)
+    json_file = test_transaction_jsons_path / "one_transaction.json"
+    json_trans_repo = JsonTransactionRepository(json_file)
     transactions = json_trans_repo.get_all_transactions()
     assert isinstance(transactions, tuple)
     assert len(transactions) == 1
@@ -88,8 +89,8 @@ def test_one_transaction(test_transaction_jsons_path: Path):
 
 
 def test_multi_transactions(test_transaction_jsons_path: Path):
-    json_path = test_transaction_jsons_path / "multi_transactions.json"
-    json_trans_repo = JsonTransactionRepository(json_path)
+    json_file = test_transaction_jsons_path / "multi_transactions.json"
+    json_trans_repo = JsonTransactionRepository(json_file)
     transactions = json_trans_repo.get_all_transactions()
     assert isinstance(transactions, tuple)
     assert all(isinstance(transaction, Transaction) for transaction in transactions)
@@ -100,14 +101,24 @@ def test_multi_transactions(test_transaction_jsons_path: Path):
 
 
 def test_raises_key_error_exception_when_uuid_is_missing(test_transaction_jsons_path: Path):
-    json_path = test_transaction_jsons_path / "missing_uuid.json"
-    json_trans_repo = JsonTransactionRepository(json_path)
+    json_file = test_transaction_jsons_path / "missing_uuid.json"
+    json_trans_repo = JsonTransactionRepository(json_file)
     with pytest.raises(KeyError):
         json_trans_repo.get_all_transactions()
 
 
 def test_raises_value_error_exception_when_uuid_is_invalid(test_transaction_jsons_path: Path):
-    json_path = test_transaction_jsons_path / "invalid_uuid.json"
-    json_trans_repo = JsonTransactionRepository(json_path)
+    json_file = test_transaction_jsons_path / "invalid_uuid.json"
+    json_trans_repo = JsonTransactionRepository(json_file)
     with pytest.raises(ValueError):
         json_trans_repo.get_all_transactions()
+
+
+def test_save_transactions(valid_income_transaction: Transaction,
+                           valid_expense_transaction: Transaction,
+                           tmp_path: Path):
+    test_transactions = (valid_income_transaction, valid_expense_transaction)
+    json_file = tmp_path / "save_transactions_file.json"
+    json_trans_repo = JsonTransactionRepository(json_file)
+    json_trans_repo.save_all_transactions(test_transactions)
+    assert json_trans_repo.get_all_transactions() == test_transactions
