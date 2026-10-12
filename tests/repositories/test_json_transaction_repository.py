@@ -8,6 +8,7 @@ import pytest
 
 from src.models.transaction import Transaction, TransactionType, IncomeCategory
 from src.repositories.json_transaction_repository import JsonTransactionRepository
+from tests.conftest import transaction_as_dict
 
 """
 design rule is:
@@ -17,6 +18,26 @@ design rule is:
 - Zero-byte file → raise json.JSONDecodeError.
 - Invalid transaction data → raise the relevant exception.
 """
+
+
+def test_deserialize_transaction(transaction_as_dict: dict[str, str]):
+    deserialize_transaction = JsonTransactionRepository._deserialize_transaction(transaction_as_dict)
+    assert deserialize_transaction.date.isoformat() == transaction_as_dict["date"]
+    assert deserialize_transaction.type.name == transaction_as_dict["type"]
+    assert deserialize_transaction.amount == Decimal(transaction_as_dict["amount"])
+    assert deserialize_transaction.category.name == transaction_as_dict["category"]
+    assert deserialize_transaction.description == transaction_as_dict["description"]
+    assert str(deserialize_transaction.uuid) == transaction_as_dict["uuid"]
+
+
+def test_serialize_transaction(valid_income_transaction: Transaction):
+    serialize_transaction = JsonTransactionRepository._serialize_transaction(valid_income_transaction)
+    assert valid_income_transaction.date.isoformat() == serialize_transaction["date"]
+    assert valid_income_transaction.type.name == serialize_transaction["type"]
+    assert str(valid_income_transaction.amount) == serialize_transaction["amount"]
+    assert valid_income_transaction.category.name == serialize_transaction["category"]
+    assert valid_income_transaction.description == serialize_transaction["description"]
+    assert str(valid_income_transaction.uuid) == serialize_transaction["uuid"]
 
 
 @pytest.mark.parametrize("test_json_file", [

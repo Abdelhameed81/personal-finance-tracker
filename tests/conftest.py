@@ -12,6 +12,18 @@ known_id = UUID("12345678-1234-5678-1234-567812345678")
 
 
 @pytest.fixture
+def transaction_as_dict() -> dict[str, str]:
+    return {
+        "date": "2024-10-09T14:32:00",
+        "type": "INCOME",
+        "amount": "1250.75",
+        "category": "SALARY",
+        "description": "October salary payment",
+        "uuid": "8f14e45f-ea7b-4c1a-9b1e-3b2f4c9d9a12"
+    }
+
+
+@pytest.fixture
 def valid_expense_transaction() -> Transaction:
     return Transaction(
         datetime(2026, 10, 5),

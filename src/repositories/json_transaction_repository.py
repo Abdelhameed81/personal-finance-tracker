@@ -39,6 +39,17 @@ class JsonTransactionRepository:
             uuid=UUID(json_transaction["uuid"]),
         )
 
+    @staticmethod
+    def _serialize_transaction(transaction: Transaction) -> dict[str, str]:
+        return {
+            "date": transaction.date.isoformat(),
+            "type": transaction.type.name,
+            "amount": str(transaction.amount),
+            "category": transaction.category.name,
+            "description": transaction.description,
+            "uuid": str(transaction.uuid),
+        }
+
     def get_all_transactions(self) -> tuple[Transaction, ...]:
         if not self._json_file_path.is_file():
             return ()
