@@ -90,3 +90,11 @@ def test_transactions_property_cannot_be_modified(valid_expense_transaction: Tra
     transactions = ledger.transactions
     with pytest.raises(AttributeError):
         transactions.append(valid_expense_transaction)
+
+
+def test_replace_transactions(valid_expense_transaction: Transaction, valid_income_transaction: Transaction):
+    original_transactions = (valid_expense_transaction,)
+    ledger = TransactionLedger(original_transactions)
+    updated_transactions = (valid_income_transaction,)
+    ledger.replace_transactions(updated_transactions)
+    assert ledger.transactions == updated_transactions

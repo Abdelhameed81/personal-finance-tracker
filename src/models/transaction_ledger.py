@@ -4,10 +4,11 @@ from src.models.transaction import Transaction
 
 class TransactionLedger:
     def __init__(self, transactions: tuple[Transaction, ...]):
-        if not isinstance(transactions, tuple):
-            raise TypeError("Transactions must be of type tuple")
-        if not all(isinstance(transaction, Transaction) for transaction in transactions):
-            raise TypeError("All transactions items must be of type Transaction")
+        self._validate_transactions(transactions)
+        self._transactions = list(transactions)
+
+    def replace_transactions(self, transactions: tuple[Transaction, ...]) -> None:
+        self._validate_transactions(transactions)
         self._transactions = list(transactions)
 
     def add_transaction(self, transaction: Transaction) -> None:
@@ -25,3 +26,10 @@ class TransactionLedger:
     @property
     def transactions(self) -> tuple[Transaction, ...]:
         return tuple(self._transactions)
+
+    @staticmethod
+    def _validate_transactions(transactions: tuple[Transaction, ...]) -> None:
+        if not isinstance(transactions, tuple):
+            raise TypeError("Transactions must be of type tuple")
+        if not all(isinstance(transaction, Transaction) for transaction in transactions):
+            raise TypeError("All transactions items must be of type Transaction")
