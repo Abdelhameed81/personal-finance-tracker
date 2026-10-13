@@ -1,3 +1,4 @@
+import json
 from decimal import Decimal
 from json import JSONDecodeError
 from pathlib import Path
@@ -121,3 +122,36 @@ def test_save_transactions(valid_income_transaction: Transaction,
     json_trans_repo = JsonTransactionRepository(json_file)
     json_trans_repo.save_all_transactions(test_transactions)
     assert json_trans_repo.get_all_transactions() == test_transactions
+
+
+def test_save_transactions_twice_on_same_file(valid_income_transaction: Transaction,
+                                              valid_expense_transaction: Transaction,
+                                              tmp_path: Path):
+    json_file = tmp_path / "save_transactions_file.json"
+    json_trans_repo = JsonTransactionRepository(json_file)
+    # first save
+    initial_transactions = (valid_income_transaction, valid_expense_transaction)
+    json_trans_repo.save_all_transactions(initial_transactions)
+    # second save
+    replacement_transactions = (valid_income_transaction,)
+    json_trans_repo.save_all_transactions(replacement_transactions)
+
+    assert json_trans_repo.get_all_transactions() == replacement_transactions
+
+
+def test_save_empty_transactions(tmp_path: Path):
+    json_file = tmp_path / "save_empty_transactions.json"
+    json_trans_repo = JsonTransactionRepository(json_file)
+    json_trans_repo.save_all_transactions(())
+    assert json_trans_repo.get_all_transactions() == ()
+    assert json.loads(json_file.read_text()) == []
+
+
+@pytest.mark.parametrize("transactions", [pytest.param([], id="not tuple"),
+                                          pytest.param(("",), id="tuple with non transaction type")])
+def test_save_invalid_transactions_type(tmp_path: Path, transactions: tuple[Transaction, ...]):
+    json_file = tmp_path / "save_empty_transactions.json"
+    json_trans_repo = JsonTransactionRepository(json_file)
+    with pytest.raises(TypeError):
+        json_trans_repo.save_all_transactions(transactions)
+    assert not json_file.is_file()

@@ -1,7 +1,6 @@
 import json
 from datetime import datetime
 from decimal import Decimal
-from json import JSONDecodeError
 from pathlib import Path
 from uuid import UUID
 
@@ -61,6 +60,10 @@ class JsonTransactionRepository:
         return tuple(transactions)
 
     def save_all_transactions(self, transactions: tuple[Transaction, ...]) -> None:
+        if not isinstance(transactions, tuple):
+            raise TypeError("transactions must be of type tuple")
+        if not all(isinstance(transaction, Transaction) for transaction in transactions):
+            raise TypeError("All transactions items must be of type Transaction")
         transactions_list = [self._serialize_transaction(transaction) for transaction in transactions]
         transactions_text = json.dumps(transactions_list, indent=2)
         self._json_file_path.write_text(transactions_text, encoding="utf-8")
