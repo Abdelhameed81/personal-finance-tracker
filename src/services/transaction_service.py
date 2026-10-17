@@ -8,8 +8,6 @@ class TransactionService:
     def __init__(self, ledger: TransactionLedger, repo: JsonTransactionRepository) -> None:
         if not isinstance(ledger, TransactionLedger):
             raise TypeError("TransactionLedger must be of type TransactionLedger")
-        if not isinstance(repo, JsonTransactionRepository):
-            raise TypeError("JsonTransactionRepository must be of type JsonTransactionRepository")
         self._ledger = ledger
         self._repo = repo
 

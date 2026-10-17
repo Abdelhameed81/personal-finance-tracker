@@ -40,7 +40,7 @@ def test_add_invalid_transaction(valid_income_transaction: Transaction, valid_ex
 
 
 def test_add_transaction_repository_save_fails(valid_income_transaction: Transaction,
-                                               valid_expense_transaction: Transaction):
+                                               valid_expense_transaction: Transaction) -> None:
     original_transactions = (valid_income_transaction,)
     ledger = TransactionLedger(original_transactions)
     mocked_repo = Mock(spec=JsonTransactionRepository)
@@ -49,7 +49,7 @@ def test_add_transaction_repository_save_fails(valid_income_transaction: Transac
     with pytest.raises(OSError):
         service.add_transaction(valid_expense_transaction)
     assert ledger.transactions == original_transactions
-    mocked_repo.save_all_transactions.assert_called_once()
+    mocked_repo.save_all_transactions.assert_called_once_with((valid_income_transaction, valid_expense_transaction))
 
 
 def test_remove_valid_transaction(valid_income_transaction: Transaction, valid_expense_transaction: Transaction,
@@ -96,7 +96,7 @@ def test_remove_unavailable_transaction(valid_income_transaction: Transaction, v
 
 
 def test_remove_transaction_repository_save_fails(valid_income_transaction: Transaction,
-                                                  valid_expense_transaction: Transaction):
+                                                  valid_expense_transaction: Transaction) -> None:
     original_transactions = (valid_income_transaction, valid_expense_transaction)
     ledger = TransactionLedger(original_transactions)
     mocked_repo = Mock(spec=JsonTransactionRepository)
@@ -105,4 +105,4 @@ def test_remove_transaction_repository_save_fails(valid_income_transaction: Tran
     with pytest.raises(OSError):
         service.remove_transaction(valid_expense_transaction)
     assert ledger.transactions == original_transactions
-    mocked_repo.save_all_transactions.assert_called_once()
+    mocked_repo.save_all_transactions.assert_called_once_with((valid_income_transaction,))
