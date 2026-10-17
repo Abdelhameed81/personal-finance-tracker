@@ -5,11 +5,9 @@ from src.repositories.json_transaction_repository import JsonTransactionReposito
 
 
 class TransactionService:
-    def __init__(self, ledger: TransactionLedger, repo: JsonTransactionRepository) -> None:
-        if not isinstance(ledger, TransactionLedger):
-            raise TypeError("TransactionLedger must be of type TransactionLedger")
-        self._ledger = ledger
+    def __init__(self, repo: JsonTransactionRepository) -> None:
         self._repo = repo
+        self._ledger = TransactionLedger(self._repo.get_all_transactions())
 
     def add_transaction(self, transaction: Transaction) -> None:
         if not isinstance(transaction, Transaction):
