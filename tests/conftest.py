@@ -92,6 +92,6 @@ def mixed_transaction_ledger(valid_income_transaction: Transaction,
 
 @pytest.fixture
 def test_transaction_jsons_path() -> Path:
-    project_root = Path(__file__).resolve().parents[1]
-    json_path = project_root / "src" / "data"
+    project_root = Path(__file__).resolve().parent
+    json_path = project_root / "data"
     return json_path
