@@ -155,3 +155,15 @@ def test_save_invalid_transactions_type(tmp_path: Path, transactions: tuple[Tran
     with pytest.raises(TypeError):
         json_trans_repo.save_all_transactions(transactions)
     assert not json_file.is_file()
+
+
+def test_save_transactions_creates_missing_parent_directory(
+        tmp_path: Path,
+        valid_income_transaction: Transaction,
+) -> None:
+    json_file = tmp_path / "data" / "transactions.json"
+    repo = JsonTransactionRepository(json_file)
+    transactions = (valid_income_transaction,)
+    repo.save_all_transactions(transactions)
+    assert json_file.is_file()
+    assert repo.get_all_transactions() == transactions

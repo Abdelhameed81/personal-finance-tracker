@@ -66,4 +66,8 @@ class JsonTransactionRepository:
             raise TypeError("All transactions items must be of type Transaction")
         transactions_list = [self._serialize_transaction(transaction) for transaction in transactions]
         transactions_text = json.dumps(transactions_list, indent=2)
+        self._json_file_path.parent.mkdir(
+            parents=True,
+            exist_ok=True
+        )
         self._json_file_path.write_text(transactions_text, encoding="utf-8")
