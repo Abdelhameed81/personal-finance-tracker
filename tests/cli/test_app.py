@@ -4,8 +4,9 @@ import pytest
 
 from pytest import MonkeyPatch
 
-from src.cli.app import ask_for_transaction_type, ask_for_amount, ask_for_description
-from src.models.transaction import TransactionType
+from src.cli.app import ask_for_transaction_type, ask_for_transaction_amount, ask_for_transaction_description, \
+    ask_for_transaction_category
+from src.models.transaction import TransactionType, IncomeCategory, ExpenseCategory
 
 
 @pytest.mark.parametrize(
@@ -41,7 +42,7 @@ def test_ask_for_amount(monkeypatch: MonkeyPatch, user_inputs: list[str],
                         expected_return_amount: Decimal) -> None:
     inputs = iter(user_inputs)
     monkeypatch.setattr("builtins.input", lambda _: next(inputs))
-    assert ask_for_amount() == expected_return_amount
+    assert ask_for_transaction_amount() == expected_return_amount
 
 
 @pytest.mark.parametrize(
@@ -57,4 +58,25 @@ def test_ask_for_description(monkeypatch: MonkeyPatch, user_inputs: list[str],
                              expected_return_description: str) -> None:
     inputs = iter(user_inputs)
     monkeypatch.setattr("builtins.input", lambda _: next(inputs))
-    assert ask_for_description() == expected_return_description
+    assert ask_for_transaction_description() == expected_return_description
+
+
+@pytest.mark.parametrize(
+    "transaction_type, user_inputs, expected_return_category",
+    [
+        pytest.param(TransactionType.INCOME, ["1"], IncomeCategory.SALARY, id="Income - user selects 1"),
+        pytest.param(TransactionType.INCOME, ["3"], IncomeCategory.OTHER, id="Income - user selects 3"),
+        pytest.param(TransactionType.EXPENSE, ["1"], ExpenseCategory.FOOD, id="Expense - user selects 1"),
+        pytest.param(TransactionType.EXPENSE, ["5"], ExpenseCategory.CHILD_CARE, id="Expense - user selects 5"),
+        pytest.param(TransactionType.EXPENSE, [" 2 "], ExpenseCategory.TRAVEL, id="Expense - user selects 2"),
+        pytest.param(TransactionType.INCOME, ["5", "1"], IncomeCategory.SALARY,
+                     id="Invalid number followed by valid choice"),
+        pytest.param(TransactionType.INCOME, ["TEST", "1"], IncomeCategory.SALARY,
+                     id="Non-numeric input followed by valid choice"),
+    ]
+)
+def test_ask_transaction_category(monkeypatch: MonkeyPatch, transaction_type: TransactionType, user_inputs: list[str],
+                                  expected_return_category: IncomeCategory | ExpenseCategory) -> None:
+    inputs = iter(user_inputs)
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+    assert ask_for_transaction_category(transaction_type) == expected_return_category

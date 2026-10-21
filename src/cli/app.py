@@ -1,6 +1,6 @@
 from decimal import Decimal, InvalidOperation
 
-from src.models.transaction import TransactionType
+from src.models.transaction import TransactionType, IncomeCategory, ExpenseCategory
 
 
 def show_menu() -> None:
@@ -24,7 +24,34 @@ def ask_for_transaction_type() -> TransactionType:
                 print("Invalid input, please enter either income or expense")
 
 
-def ask_for_amount() -> Decimal | None:
+def ask_for_transaction_category(transaction_type: TransactionType) -> IncomeCategory | ExpenseCategory:
+    categories = (
+        list(IncomeCategory)
+        if transaction_type is TransactionType.INCOME
+        else list(ExpenseCategory)
+    )
+    displayed_options = "\n".join(
+        f"{i}. {category.name}"
+        for i, category in enumerate(categories, start=1)
+    )
+    user_message = ("Please select one of the following options:\n" + displayed_options + "\n> ")
+    while True:
+        user_input = input(user_message).strip()
+        try:
+            user_choice = int(user_input)
+            if 1 <= user_choice <= len(categories):
+                return categories[user_choice - 1]
+            print(
+                f"Invalid choice. Please enter a number between "
+                f"1 and {len(categories)}."
+            )
+            continue
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+            continue
+
+
+def ask_for_transaction_amount() -> Decimal | None:
     user_message = "Please enter the amount you would like to add: "
     while True:
         user_input = input(user_message).strip()
@@ -42,7 +69,7 @@ def ask_for_amount() -> Decimal | None:
             continue
 
 
-def ask_for_description() -> str | None:
+def ask_for_transaction_description() -> str | None:
     user_message = "Please add description for your transaction: "
     while True:
         user_input = input(user_message).strip()
