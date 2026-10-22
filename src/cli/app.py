@@ -1,6 +1,8 @@
+from datetime import datetime
 from decimal import Decimal, InvalidOperation
 
-from src.models.transaction import TransactionType, IncomeCategory, ExpenseCategory
+from src.models.transaction import TransactionType, IncomeCategory, ExpenseCategory, Transaction
+from src.services.transaction_service import TransactionService
 
 
 def show_menu() -> None:
@@ -51,7 +53,7 @@ def ask_for_transaction_category(transaction_type: TransactionType) -> IncomeCat
             continue
 
 
-def ask_for_transaction_amount() -> Decimal | None:
+def ask_for_transaction_amount() -> Decimal:
     user_message = "Please enter the amount you would like to add: "
     while True:
         user_input = input(user_message).strip()
@@ -69,7 +71,7 @@ def ask_for_transaction_amount() -> Decimal | None:
             continue
 
 
-def ask_for_transaction_description() -> str | None:
+def ask_for_transaction_description() -> str:
     user_message = "Please add description for your transaction: "
     while True:
         user_input = input(user_message).strip()
@@ -79,13 +81,25 @@ def ask_for_transaction_description() -> str | None:
         return user_input
 
 
-def run_app() -> None:
+def add_transaction(transaction_service: TransactionService) -> None:
+    transaction_type = ask_for_transaction_type()
+    new_transaction = Transaction(
+        date=datetime.now(),
+        type=transaction_type,
+        amount=ask_for_transaction_amount(),
+        category=ask_for_transaction_category(transaction_type),
+        description=ask_for_transaction_description(),
+    )
+    transaction_service.add_transaction(new_transaction)
+
+
+def run_app(transaction_service: TransactionService) -> None:
     while True:
         show_menu()
         selection = input("Please select an option ... ")
         match selection:
             case "1":
-                print("Add a transaction is not implemented yet")
+                add_transaction(transaction_service)
             case "2":
                 print("View all transactions is not implemented yet")
             case "3":
@@ -97,3 +111,4 @@ def run_app() -> None:
                 break
             case _:
                 print("Invalid input, please select one of these options")
+        break

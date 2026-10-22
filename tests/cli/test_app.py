@@ -1,12 +1,18 @@
+from datetime import date, datetime
 from decimal import Decimal
+from pathlib import Path
+from unittest.mock import Mock
+from uuid import UUID
 
 import pytest
 
 from pytest import MonkeyPatch
 
 from src.cli.app import ask_for_transaction_type, ask_for_transaction_amount, ask_for_transaction_description, \
-    ask_for_transaction_category
-from src.models.transaction import TransactionType, IncomeCategory, ExpenseCategory
+    ask_for_transaction_category, run_app
+from src.models.transaction import TransactionType, IncomeCategory, ExpenseCategory, Transaction
+from src.repositories.json_transaction_repository import JsonTransactionRepository
+from src.services.transaction_service import TransactionService
 
 
 @pytest.mark.parametrize(
@@ -75,8 +81,28 @@ def test_ask_for_description(monkeypatch: MonkeyPatch, user_inputs: list[str],
                      id="Non-numeric input followed by valid choice"),
     ]
 )
-def test_ask_transaction_category(monkeypatch: MonkeyPatch, transaction_type: TransactionType, user_inputs: list[str],
-                                  expected_return_category: IncomeCategory | ExpenseCategory) -> None:
+def test_ask_for_transaction_category(monkeypatch: MonkeyPatch, transaction_type: TransactionType,
+                                      user_inputs: list[str],
+                                      expected_return_category: IncomeCategory | ExpenseCategory) -> None:
     inputs = iter(user_inputs)
     monkeypatch.setattr("builtins.input", lambda _: next(inputs))
     assert ask_for_transaction_category(transaction_type) == expected_return_category
+
+
+@pytest.mark.parametrize("user_inputs", [
+    pytest.param(["1", "Income", "55.05", "3", "test transaction", "5"],
+                 id="Add transaction - happy path"),
+])
+def test_run_app(monkeypatch: MonkeyPatch, user_inputs: list[str]) -> None:
+    transaction_service = Mock()
+    inputs = iter(user_inputs)
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+    run_app(transaction_service)
+    transaction_service.add_transaction.assert_called_once()
+    actual_transaction = transaction_service.add_transaction.call_args.args[0]
+    assert actual_transaction.type == TransactionType.INCOME
+    assert actual_transaction.amount == Decimal("55.05")
+    assert actual_transaction.category == IncomeCategory.OTHER
+    assert actual_transaction.description == "test transaction"
+    assert isinstance(actual_transaction.date, datetime)
+    assert isinstance(actual_transaction.uuid, UUID)
