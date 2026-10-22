@@ -5,6 +5,7 @@ from unittest.mock import Mock
 from uuid import UUID
 
 import pytest
+from _pytest.capture import CaptureFixture
 
 from pytest import MonkeyPatch
 
@@ -93,7 +94,7 @@ def test_ask_for_transaction_category(monkeypatch: MonkeyPatch, transaction_type
     pytest.param(["1", "Income", "55.05", "3", "test transaction", "5"],
                  id="Add transaction - happy path"),
 ])
-def test_run_app(monkeypatch: MonkeyPatch, user_inputs: list[str]) -> None:
+def test_run_app_add_transaction_option(monkeypatch: MonkeyPatch, user_inputs: list[str]) -> None:
     transaction_service = Mock()
     inputs = iter(user_inputs)
     monkeypatch.setattr("builtins.input", lambda _: next(inputs))
@@ -106,3 +107,27 @@ def test_run_app(monkeypatch: MonkeyPatch, user_inputs: list[str]) -> None:
     assert actual_transaction.description == "test transaction"
     assert isinstance(actual_transaction.date, datetime)
     assert isinstance(actual_transaction.uuid, UUID)
+
+
+@pytest.mark.parametrize("transactions, expected_output", [
+    pytest.param((), "There are no transactions",
+                 id="View all transactions option with no transactions"),
+    pytest.param(
+        (Transaction(
+            date=datetime.now(),
+            type=TransactionType.INCOME,
+            amount=Decimal("55.05"),
+            category=IncomeCategory.OTHER,
+            description="test transaction"),)
+        , "test transaction",
+        id="View all transactions option with transactions")
+])
+def test_run_app_view_all_transactions_option(monkeypatch: MonkeyPatch, capsys: CaptureFixture[str],
+                                              transactions: tuple[Transaction, ...], expected_output: str) -> None:
+    transaction_service = Mock()
+    transaction_service.transactions = transactions
+    inputs = iter(["2", "5"])
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+    run_app(transaction_service)
+    captured = capsys.readouterr()
+    assert expected_output in captured.out

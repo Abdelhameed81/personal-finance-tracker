@@ -93,6 +93,23 @@ def add_transaction(transaction_service: TransactionService) -> None:
     transaction_service.add_transaction(new_transaction)
 
 
+def view_all_transactions(transaction_service: TransactionService) -> None:
+    transactions = transaction_service.transactions
+    if not transactions:
+        print("There are no transactions")
+    else:
+        print("==========================START=================================")
+        for transaction in transactions:
+            print(f"Transaction: {transaction.uuid}")
+            print(f"Date: {transaction.date}")
+            print(f"Type: {transaction.type.name}")
+            print(f"Amount: £{transaction.amount}")
+            print(f"Category: {transaction.category.name}")
+            print(f"Description: {transaction.description}")
+            print("============================================================\n")
+        print("=========================END====================================")
+
+
 def run_app(transaction_service: TransactionService) -> None:
     while True:
         show_menu()
@@ -101,7 +118,7 @@ def run_app(transaction_service: TransactionService) -> None:
             case "1":
                 add_transaction(transaction_service)
             case "2":
-                print("View all transactions is not implemented yet")
+                view_all_transactions(transaction_service)
             case "3":
                 print("Remove a transaction is not implemented yet")
             case "4":
@@ -111,4 +128,3 @@ def run_app(transaction_service: TransactionService) -> None:
                 break
             case _:
                 print("Invalid input, please select one of these options")
-        break

@@ -28,3 +28,7 @@ class TransactionService:
             remove_first_occurrence + 1:]
         self._repo.save_all_transactions(updated_transactions)
         self._ledger.replace_transactions(updated_transactions)
+
+    @property
+    def transactions(self) -> tuple[Transaction, ...]:
+        return self._ledger.transactions
