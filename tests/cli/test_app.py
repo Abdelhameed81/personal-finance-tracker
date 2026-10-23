@@ -1,11 +1,8 @@
-from datetime import date, datetime
+from datetime import datetime
 from decimal import Decimal
-from pathlib import Path
 from unittest.mock import Mock
-from urllib import request
 from uuid import UUID
 
-import callspec
 import pytest
 from _pytest.capture import CaptureFixture
 
@@ -14,8 +11,6 @@ from pytest import MonkeyPatch
 from src.cli.app import ask_for_transaction_type, ask_for_transaction_amount, ask_for_transaction_description, \
     ask_for_transaction_category, run_app
 from src.models.transaction import TransactionType, IncomeCategory, ExpenseCategory, Transaction
-from src.repositories.json_transaction_repository import JsonTransactionRepository
-from src.services.transaction_service import TransactionService
 
 
 @pytest.mark.parametrize(
