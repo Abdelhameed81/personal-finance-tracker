@@ -16,10 +16,10 @@ from src.models.transaction import TransactionType, IncomeCategory, ExpenseCateg
 @pytest.mark.parametrize(
     "user_inputs, expected_return_type",
     [
-        pytest.param(["income"], TransactionType.INCOME, id="User entered income"),
-        pytest.param(["expense"], TransactionType.EXPENSE, id="User entered expense"),
-        pytest.param([" income "], TransactionType.INCOME, id="User entered income with spaces"),
-        pytest.param(["blah blah", "expense"], TransactionType.EXPENSE, id="User entered blah blah then expense")
+        pytest.param(["income"], TransactionType.INCOME, id="user entered income"),
+        pytest.param(["expense"], TransactionType.EXPENSE, id="user entered expense"),
+        pytest.param([" income "], TransactionType.INCOME, id="user entered income with spaces"),
+        pytest.param(["blah blah", "expense"], TransactionType.EXPENSE, id="user entered blah blah then expense")
     ]
 )
 def test_ask_for_transaction_type(monkeypatch: MonkeyPatch, user_inputs: list[str],
