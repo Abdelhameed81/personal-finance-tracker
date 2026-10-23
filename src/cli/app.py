@@ -2,6 +2,7 @@ from datetime import datetime
 from decimal import Decimal, InvalidOperation
 
 from src.models.transaction import TransactionType, IncomeCategory, ExpenseCategory, Transaction
+from src.services.transaction_reporter import TransactionReporter
 from src.services.transaction_service import TransactionService
 
 
@@ -120,6 +121,16 @@ def remove_transaction(transaction_service: TransactionService) -> None:
             transaction_service.remove_transaction(transaction_to_remove)
 
 
+def view_financial_summary(transaction_service: TransactionService) -> None:
+    transactions = transaction_service.transactions
+    reporter = TransactionReporter(transactions)
+    print("========== Financial Summary ==========")
+    print(f"{"Total Income:":<20} £{reporter.total_income()}")
+    print(f"{"Total Expenses:":<20} £{reporter.total_expenses()}")
+    print(f"{"Balance:":<20} £{reporter.balance}")
+    print("=======================================")
+
+
 def run_app(transaction_service: TransactionService) -> None:
     while True:
         show_menu()
@@ -132,7 +143,7 @@ def run_app(transaction_service: TransactionService) -> None:
             case "3":
                 remove_transaction(transaction_service)
             case "4":
-                print("View financial summary is not implemented yet")
+                view_financial_summary(transaction_service)
             case "5":
                 print("Exiting now, thanks and good bye!")
                 break

@@ -164,3 +164,19 @@ def test_run_app_remove_transaction_option(monkeypatch: MonkeyPatch,
         transaction_service.get_transaction_by_uuid.assert_called_once_with(str(transactions[0].uuid))
     else:
         transaction_service.get_transaction_by_uuid.assert_not_called()
+
+
+def test_view_financial_summary(monkeypatch: MonkeyPatch, capsys: CaptureFixture[str]) -> None:
+    transaction_service = Mock()
+    transaction_service.transactions = (Transaction(
+        date=datetime.now(),
+        type=TransactionType.INCOME,
+        amount=Decimal("55.05"),
+        category=IncomeCategory.OTHER,
+        description="test transaction"),)
+
+    inputs = iter(["4", "5"])
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+    run_app(transaction_service)
+    captured = capsys.readouterr()
+    assert "========== Financial Summary ==========" in captured.out
