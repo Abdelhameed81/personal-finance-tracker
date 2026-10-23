@@ -110,6 +110,16 @@ def view_all_transactions(transaction_service: TransactionService) -> None:
         print("=========================END====================================")
 
 
+def remove_transaction(transaction_service: TransactionService) -> None:
+    view_all_transactions(transaction_service)
+    transactions = transaction_service.transactions
+    if transactions:
+        uuid = input("Please enter a transaction uuid: ")
+        transaction_to_remove = transaction_service.get_transaction_by_uuid(uuid)
+        if transaction_to_remove:
+            transaction_service.remove_transaction(transaction_to_remove)
+
+
 def run_app(transaction_service: TransactionService) -> None:
     while True:
         show_menu()
@@ -120,7 +130,7 @@ def run_app(transaction_service: TransactionService) -> None:
             case "2":
                 view_all_transactions(transaction_service)
             case "3":
-                print("Remove a transaction is not implemented yet")
+                remove_transaction(transaction_service)
             case "4":
                 print("View financial summary is not implemented yet")
             case "5":

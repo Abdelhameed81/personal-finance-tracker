@@ -2,8 +2,10 @@ from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
 from unittest.mock import Mock
+from urllib import request
 from uuid import UUID
 
+import callspec
 import pytest
 from _pytest.capture import CaptureFixture
 
@@ -131,3 +133,34 @@ def test_run_app_view_all_transactions_option(monkeypatch: MonkeyPatch, capsys: 
     run_app(transaction_service)
     captured = capsys.readouterr()
     assert expected_output in captured.out
+
+
+@pytest.mark.parametrize("transactions", [
+    pytest.param((),
+                 id="Remove transaction with no transactions"),
+    pytest.param(
+        (Transaction(
+            date=datetime.now(),
+            type=TransactionType.INCOME,
+            amount=Decimal("55.05"),
+            category=IncomeCategory.OTHER,
+            description="test transaction"),),
+        id="Remove transaction with transactions")
+])
+def test_run_app_remove_transaction_option(monkeypatch: MonkeyPatch,
+                                           transactions: tuple[Transaction, ...]) -> None:
+    transaction_service = Mock()
+    transaction_service.transactions = transactions
+    if transactions:
+        uuid = transactions[0].uuid
+        inputs = iter(["3", str(uuid), "5"])
+    else:
+        inputs = iter(["3", "5"])
+
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+    run_app(transaction_service)
+
+    if transactions:
+        transaction_service.get_transaction_by_uuid.assert_called_once_with(str(transactions[0].uuid))
+    else:
+        transaction_service.get_transaction_by_uuid.assert_not_called()

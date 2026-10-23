@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from src.exceptions import TransactionNotFoundError
 from src.models.transaction import Transaction
 from src.models.transaction_ledger import TransactionLedger
@@ -32,3 +34,10 @@ class TransactionService:
     @property
     def transactions(self) -> tuple[Transaction, ...]:
         return self._ledger.transactions
+
+    def get_transaction_by_uuid(self, transaction_uuid: str) -> Transaction | None:
+        transactions = self._ledger.transactions
+        for transaction in transactions:
+            if transaction.uuid == UUID(transaction_uuid):
+                return transaction
+        return None
