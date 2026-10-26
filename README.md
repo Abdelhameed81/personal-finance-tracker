@@ -54,12 +54,18 @@ persisting transaction data in JSON format.
    source .venv/bin/activate
    ```
 
+5. Install the dependencies:
+
+   ```bash
+   python -m pip install -r requirements.txt
+   ```
+
 ## Running the Application
 
-Run the application from the project root:
+Run the application from the project root, with the virtual environment activated:
 
 ```bash
-python main.py
+python -m src.main
 ```
 
 The application provides a menu to add transactions, view transactions, remove transactions, display a financial
@@ -73,23 +79,16 @@ summary, and exit.
 4. View financial summary
 5. Exit
 
-Transaction data is stored in a JSON file under the project's `data` directory.
+Transaction data is stored in `src/data/transactions.json`. The file and its folder are created
+automatically the first time you save a transaction, and the file is excluded from version control.
 
 ## Running Tests
 
-This project uses `pytest` for automated testing.
+From the project root, with the virtual environment activated:
 
-1. Install pytest:
-
-   ```bash
-   python -m pip install -r requirements.txt
-   ```
-
-2. Run the test suite from the project root:
-
-   ```bash
-   python -m pytest
-   ```
+```bash
+python -m pytest
+```
 
 The test suite covers the transaction model, ledger, JSON repository, reporting, service layer, CLI, and integration
 workflows.
