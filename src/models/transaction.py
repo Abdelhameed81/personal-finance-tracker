@@ -46,6 +46,8 @@ class Transaction:
             raise TypeError("Expense transactions must be of type ExpenseCategory")
         if not isinstance(self.amount, Decimal):
             raise TypeError("Transaction amount must be of type Decimal")
+        if not self.amount.is_finite():
+            raise ValueError("Transaction amount must be a finite number")
         if self.amount <= 0:
             raise ValueError("Transaction amount must be positive")
         if not isinstance(self.description, str):

@@ -61,16 +61,16 @@ def ask_for_transaction_amount() -> Decimal:
         user_input = input(user_message).strip()
         try:
             amount = Decimal(user_input)
-            if amount <= 0:
-                user_message = "Invalid input, please enter a positive number: "
-                continue
-            if amount.as_tuple().exponent < -2:
-                user_message = "Please enter a value with two decimal places: "
-                continue
-            return amount
         except InvalidOperation:
             user_message = "Invalid amount. Please enter a valid number: "
             continue
+        if not amount.is_finite() or amount <= 0:
+            user_message = "Invalid input, please enter a positive number: "
+            continue
+        if amount.as_tuple().exponent < -2:
+            user_message = "Please enter a value with at most two decimal places: "
+            continue
+        return amount
 
 
 def ask_for_transaction_description() -> str:

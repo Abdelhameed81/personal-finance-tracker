@@ -167,3 +167,10 @@ def test_save_transactions_creates_missing_parent_directory(
     repo.save_all_transactions(transactions)
     assert json_file.is_file()
     assert repo.get_all_transactions() == transactions
+
+
+def test_raises_value_error_exception_when_amount_is_not_finite(test_transaction_jsons_path: Path):
+    json_file = test_transaction_jsons_path / "infinite_amount.json"
+    json_trans_repo = JsonTransactionRepository(json_file)
+    with pytest.raises(ValueError):
+        json_trans_repo.get_all_transactions()

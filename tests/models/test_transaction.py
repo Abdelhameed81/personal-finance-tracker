@@ -101,7 +101,19 @@ def test_transaction_rejects_invalid_type():
                                  TypeError,
                                  "Transaction amount must be of type Decimal",
                                  id="Verify transaction raises TypeError exception when amount is not of decimal type"
-                             )
+                             ),
+                             pytest.param(
+                                 Decimal("Infinity"),
+                                 ValueError,
+                                 "Transaction amount must be a finite number",
+                                 id="Verify transaction raises ValueError exception when amount is infinite"
+                             ),
+                             pytest.param(
+                                 Decimal("NaN"),
+                                 ValueError,
+                                 "Transaction amount must be a finite number",
+                                 id="Verify transaction raises ValueError exception when amount is NaN"
+                             ),
                          ]
                          )
 def test_transaction_rejects_invalid_amount(amount: Decimal | float,
