@@ -156,7 +156,7 @@ def test_run_app_remove_transaction_option(monkeypatch: MonkeyPatch,
     run_app(transaction_service)
 
     if transactions:
-        transaction_service.get_transaction_by_uuid.assert_called_once_with(str(transactions[0].uuid))
+        transaction_service.get_transaction_by_uuid.assert_called_once_with(transactions[0].uuid)
     else:
         transaction_service.get_transaction_by_uuid.assert_not_called()
 
