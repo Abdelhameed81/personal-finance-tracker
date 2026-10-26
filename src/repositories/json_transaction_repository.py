@@ -1,4 +1,6 @@
 import json
+import os
+import tempfile
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
@@ -66,8 +68,24 @@ class JsonTransactionRepository:
             raise TypeError("All transactions items must be of type Transaction")
         transactions_list = [self._serialize_transaction(transaction) for transaction in transactions]
         transactions_text = json.dumps(transactions_list, indent=2)
-        self._json_file_path.parent.mkdir(
-            parents=True,
-            exist_ok=True
+        self._json_file_path.parent.mkdir(parents=True, exist_ok=True)
+        self._write_atomically(transactions_text)
+
+    def _write_atomically(self, text: str) -> None:
+        # The temp file must be in the same directory as the target: os.replace is only
+        # atomic within one filesystem.
+        file_descriptor, temp_name = tempfile.mkstemp(
+            dir=self._json_file_path.parent,
+            prefix=f"{self._json_file_path.name}.",
+            suffix=".tmp",
         )
-        self._json_file_path.write_text(transactions_text, encoding="utf-8")
+        temp_path = Path(temp_name)
+        try:
+            with os.fdopen(file_descriptor, "w", encoding="utf-8") as temp_file:
+                temp_file.write(text)
+                temp_file.flush()
+                os.fsync(temp_file.fileno())  # force the bytes to disk before the swap
+            temp_path.replace(self._json_file_path)
+        except BaseException:
+            temp_path.unlink(missing_ok=True)  # don't leave stray .tmp files behind
+            raise
