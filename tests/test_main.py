@@ -4,6 +4,7 @@ import pytest
 from pytest import CaptureFixture, MonkeyPatch
 
 import src.main as main_module
+from src.services.transaction_service import TransactionService
 
 
 def test_main_reports_corrupt_data_file_and_leaves_it_untouched(
@@ -48,3 +49,8 @@ def test_main_exits_cleanly_on_interrupt(
 
     assert main_module.main() == 0
     assert "Goodbye" in capsys.readouterr().out
+
+
+def test_importing_main_does_not_start_the_app() -> None:
+    import importlib
+    importlib.reload(main_module)  # would block on input() if the app ran at import time
