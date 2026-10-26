@@ -11,6 +11,7 @@ from pytest import MonkeyPatch
 from src.cli.app import ask_for_transaction_type, ask_for_transaction_amount, ask_for_transaction_description, \
     ask_for_transaction_category, run_app
 from src.models.transaction import TransactionType, IncomeCategory, ExpenseCategory, Transaction
+from src.services.transaction_service import TransactionService
 
 
 @pytest.mark.parametrize(
@@ -181,3 +182,18 @@ def test_view_financial_summary(monkeypatch: MonkeyPatch, capsys: CaptureFixture
     run_app(transaction_service)
     captured = capsys.readouterr()
     assert "========== Financial Summary ==========" in captured.out
+
+
+def test_run_app_continues_after_save_failure(monkeypatch: MonkeyPatch,
+                                              capsys: CaptureFixture[str]) -> None:
+    transaction_service = Mock(spec=TransactionService)
+    transaction_service.add_transaction.side_effect = OSError("disk full")
+    inputs = iter(["1", "income", "10", "1", "salary", "5"])
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    run_app(transaction_service)  # must not raise
+
+    captured = capsys.readouterr()
+    assert "Could not save your changes: disk full" in captured.out
+    assert "good bye" in captured.out  # the loop kept going until "5"
+    transaction_service.add_transaction.assert_called_once()

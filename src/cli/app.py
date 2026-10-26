@@ -144,17 +144,21 @@ def run_app(transaction_service: TransactionService) -> None:
     while True:
         show_menu()
         selection = input("Please select an option ... ")
-        match selection:
-            case "1":
-                add_transaction(transaction_service)
-            case "2":
-                view_all_transactions(transaction_service)
-            case "3":
-                remove_transaction(transaction_service)
-            case "4":
-                view_financial_summary(transaction_service)
-            case "5":
-                print("Exiting now, thanks and good bye!")
-                break
-            case _:
-                print("Invalid input, please select one of these options")
+        try:
+            match selection:
+                case "1":
+                    add_transaction(transaction_service)
+                case "2":
+                    view_all_transactions(transaction_service)
+                case "3":
+                    remove_transaction(transaction_service)
+                case "4":
+                    view_financial_summary(transaction_service)
+                case "5":
+                    print("Exiting now, thanks and good bye!")
+                    break
+                case _:
+                    print("Invalid input, please select one of these options")
+        except OSError as error:
+            print(f"Could not save your changes: {error}")
+            print("Nothing was changed. Please try again.")
