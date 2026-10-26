@@ -40,6 +40,12 @@ def test_ask_for_transaction_type(monkeypatch: MonkeyPatch, user_inputs: list[st
         pytest.param(["text", "25.04"], Decimal("25.04"), id="Reject invalid text, then ask again"),
         pytest.param(["25.004", "25.04"], Decimal("25.04"),
                      id="Reject more than two decimal places, then ask again"),
+        pytest.param(["inf", "25.04"], Decimal("25.04"),
+                     id="Reject infinity, then ask again"),
+        pytest.param(["-Infinity", "25.04"], Decimal("25.04"),
+                     id="Reject negative infinity, then ask again"),
+        pytest.param(["NaN", "25.04"], Decimal("25.04"),
+                     id="Reject NaN, then ask again"),
     ]
 )
 def test_ask_for_amount(monkeypatch: MonkeyPatch, user_inputs: list[str],
