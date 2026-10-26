@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
+from uuid import UUID
 
 from src.models.transaction import TransactionType, IncomeCategory, ExpenseCategory, Transaction
 from src.services.transaction_reporter import TransactionReporter
@@ -114,11 +115,19 @@ def view_all_transactions(transaction_service: TransactionService) -> None:
 def remove_transaction(transaction_service: TransactionService) -> None:
     view_all_transactions(transaction_service)
     transactions = transaction_service.transactions
-    if transactions:
-        uuid = input("Please enter a transaction uuid: ")
-        transaction_to_remove = transaction_service.get_transaction_by_uuid(uuid)
-        if transaction_to_remove:
-            transaction_service.remove_transaction(transaction_to_remove)
+    if not transactions:
+        return
+    try:
+        transaction_uuid = UUID(input("Please enter a transaction uuid: ").strip())
+    except ValueError:
+        print("Invalid uuid, please enter a valid uuid.")
+        return
+    transaction_to_remove = transaction_service.get_transaction_by_uuid(transaction_uuid)
+    if transaction_to_remove is None:
+        print("No transaction not found with that UUID")
+        return
+    transaction_service.remove_transaction(transaction_to_remove)
+    print("Transaction removed successfully")
 
 
 def view_financial_summary(transaction_service: TransactionService) -> None:
