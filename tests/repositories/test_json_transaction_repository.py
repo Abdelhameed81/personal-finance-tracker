@@ -174,3 +174,32 @@ def test_raises_value_error_exception_when_amount_is_not_finite(test_transaction
     json_trans_repo = JsonTransactionRepository(json_file)
     with pytest.raises(ValueError):
         json_trans_repo.get_all_transactions()
+
+
+def test_failed_save_leaves_original_file_intact(valid_income_transaction: Transaction,
+                                                 valid_expense_transaction: Transaction,
+                                                 tmp_path: Path,
+                                                 monkeypatch: pytest.MonkeyPatch) -> None:
+    json_file = tmp_path / "transactions.json"
+    repo = JsonTransactionRepository(json_file)
+    original_transactions = (valid_income_transaction,)
+    repo.save_all_transactions(original_transactions)
+
+    def failing_replace(self: Path, target: Path) -> None:
+        raise OSError("Simulated failure during final swap")
+
+    monkeypatch.setattr(Path, "replace", failing_replace)
+
+    with pytest.raises(OSError):
+        repo.save_all_transactions((valid_income_transaction, valid_expense_transaction))
+
+    assert repo.get_all_transactions() == original_transactions
+    assert list(tmp_path.iterdir()) == [json_file]  # no leftover temp files
+
+
+def test_successful_save_leaves_no_temp_files(valid_income_transaction: Transaction,
+                                              tmp_path: Path) -> None:
+    json_file = tmp_path / "transactions.json"
+    repo = JsonTransactionRepository(json_file)
+    repo.save_all_transactions((valid_income_transaction,))
+    assert list(tmp_path.iterdir()) == [json_file]
